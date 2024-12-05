@@ -1,25 +1,27 @@
 from flask import Flask, request, jsonify
 from textblob import TextBlob
+from yt import *
+
 
 app = Flask(__name__)
 
 @app.route('/analyze', methods=['POST'])
 def analyze_text():
     data = request.get_json()
-    text = data.get('text', '')
+    url = data.get('url', '')
 
-    if not text:
-        return jsonify({"error": "Parâmetro 'text' é necessário!"}), 400
+    if not url:
+        return jsonify({"error": "Parâmetro 'url' é necessário!"}), 400
 
-    lines = text.splitlines()
+    video_id = url.split("v=")[-1]
+    comentarios = Get_Comments(video_id=video_id)
 
     results = []
-
-    for i, text in  enumerate(lines):
-        analysis = TextBlob(text)
+    for i, comentario in  enumerate(comentarios):
+        analysis = TextBlob(comentario)
         result = {
             "index": i,
-            "text": text,
+            "text": comentario,
             "polarity": analysis.sentiment.polarity,  
             "subjectivity": analysis.sentiment.subjectivity,  
         }
@@ -29,6 +31,6 @@ def analyze_text():
 
 @app.route('/analyze', methods=['GET'])
 def dica():
-    return "<p>O texto precisa ser enviado no corpo da requisição usando o parâmetro \'text\'. </p>"
+    return "<p>O link do video precisa ser enviado no corpo da requisição usando o parâmetro \'url\'. </p>"
 if __name__ == '__main__':
     app.run(port=5000)
