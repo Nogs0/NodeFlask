@@ -1,10 +1,10 @@
 const http = require('node:http');
 
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = 3001;
 
 const server = http.createServer(async (req, res) => {
-  http.get(`http://127.0.0.1:5000/`, (resFlask) => {
+  http.get(`http://127.0.0.1:5000/analyze`, (resFlask) => {
     let rawData = '';
     resFlask.on('data', (chunk) => {
       rawData += chunk;
