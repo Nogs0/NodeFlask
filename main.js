@@ -4,7 +4,18 @@ const hostname = '127.0.0.1';
 const port = 3001;
 
 const server = http.createServer(async (req, res) => {
-  const youtubeUrl = 'https://www.youtube.com/watch?v=F_ukcJokV0g';
+  const url = new URL(req.url, `http://${hostname}:${port}`);
+  const youtubeUrl = url.searchParams.get('url');
+
+  if (!youtubeUrl) {
+    res.statusCode = 400;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(
+      { 
+      error: "Parâmetro 'url' é necessário!" 
+    }));
+    return;
+  }
 
   const flaskPath = `/analyze?url=${encodeURIComponent(youtubeUrl)}`;
 
@@ -12,7 +23,7 @@ const server = http.createServer(async (req, res) => {
     hostname: '127.0.0.1',
     port: 5000,
     path: flaskPath,
-    method: 'GET',   
+    method: 'GET',
   };
 
   const reqFlask = http.request(options, (resFlask) => {
